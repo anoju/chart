@@ -121,3 +121,10 @@ const Utils = {
 function valueOrDefault(value, defaultValue) {
   return typeof value === 'undefined' ? defaultValue : value;
 }
+
+const $anchor = document.querySelectorAll('a[href="#"]');
+$anchor.forEach(function (el) {
+  el.addEventListener('click', function (e) {
+    e.preventDefault();
+  });
+});
