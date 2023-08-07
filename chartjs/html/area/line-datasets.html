@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Area</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="line-chart-datasets"><a href="#line-chart-datasets" class="header-anchor">#</a> Line Chart Datasets</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.randomize();">Randomize</a>
+              <a href="#" class="chart-action" onclick="actions.propagate();">Propagate</a>
+              <a href="#" class="chart-action" onclick="actions.smooth();">Smooth</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const inputs = {
+        min: 20,
+        max: 80,
+        count: 8,
+        decimals: 2,
+        continuity: 1
+      };
+
+      const generateLabels = () => {
+        return Utils.months({ count: inputs.count });
+      };
+
+      const generateData = () => Utils.numbers(inputs);
+
+      Utils.srand(42);
+      const data = {
+        labels: generateLabels(),
+        datasets: [
+          {
+            label: 'D0',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.red,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red),
+            hidden: true
+          },
+          {
+            label: 'D1',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.orange,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.orange),
+            fill: '-1'
+          },
+          {
+            label: 'D2',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.yellow,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.yellow),
+            hidden: true,
+            fill: 1
+          },
+          {
+            label: 'D3',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.green,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.green),
+            fill: '-1'
+          },
+          {
+            label: 'D4',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.blue,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue),
+            fill: '-1'
+          },
+          {
+            label: 'D5',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.grey,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.grey),
+            fill: '+2'
+          },
+          {
+            label: 'D6',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.purple,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.purple),
+            fill: false
+          },
+          {
+            label: 'D7',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.red,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red),
+            fill: 8
+          },
+          {
+            label: 'D8',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.orange,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.orange),
+            fill: 'end',
+            hidden: true
+          },
+          {
+            label: 'D9',
+            data: generateData(),
+            borderColor: Utils.CHART_COLORS.yellow,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.yellow),
+            fill: { above: 'blue', below: 'red', target: { value: 350 } }
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          scales: {
+            y: {
+              stacked: true
+            }
+          },
+          plugins: {
+            filler: {
+              propagate: false
+            },
+            'samples-filler-analyser': {
+              target: 'chart-analyser'
+            }
+          },
+          interaction: {
+            intersect: false
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      let smooth = false;
+      let propagate = false;
+      const actions = {
+        randomize: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data = generateData();
+          });
+          chart.update();
+        },
+        propagate: function () {
+          propagate = !propagate;
+          chart.options.plugins.filler.propagate = propagate;
+          chart.update();
+        },
+        smooth: function () {
+          smooth = !smooth;
+          chart.options.elements.line.tension = smooth ? 0.4 : 0;
+          chart.update();
+        }
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

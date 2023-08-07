@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Other</title>
+    <title>Area</title>
     <link rel="stylesheet" href="../../css/chart-docs.css" />
     <script src="../../js/include.js"></script>
   </head>
@@ -14,12 +14,15 @@
 
       <main class="page">
         <div class="theme-default-content content__default">
-          <h1 id="combo-bar-line"><a href="#combo-bar-line" class="header-anchor">#</a> Combo bar/line</h1>
+          <h1 id="line-chart-stacked"><a href="#line-chart-stacked" class="header-anchor">#</a> Line Chart Stacked</h1>
           <div>
             <div class="chart-view">
               <canvas id="chart"></canvas>
             </div>
             <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.stacked();">Stacked: true</a>
+              <a href="#" class="chart-action" onclick="actions.stackedFalse();">Stacked: false (default)</a>
+              <a href="#" class="chart-action" onclick="actions.stackedSingle();">Stacked Single</a>
               <a href="#" class="chart-action" onclick="actions.randomize();">Randomize</a>
               <a href="#" class="chart-action" onclick="actions.addDataset();">add Dataset</a>
               <a href="#" class="chart-action" onclick="actions.addData();">add Data</a>
@@ -47,36 +50,69 @@
         labels: labels,
         datasets: [
           {
-            label: 'Dataset 1',
+            label: 'My First dataset',
             data: Utils.numbers(NUMBER_CFG),
             borderColor: Utils.CHART_COLORS.red,
-            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
-            order: 1
+            backgroundColor: Utils.CHART_COLORS.red,
+            fill: true
           },
           {
-            label: 'Dataset 2',
+            label: 'My Second dataset',
             data: Utils.numbers(NUMBER_CFG),
             borderColor: Utils.CHART_COLORS.blue,
-            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
-            type: 'line',
-            order: 0
+            backgroundColor: Utils.CHART_COLORS.blue,
+            fill: true
+          },
+          {
+            label: 'My Third dataset',
+            data: Utils.numbers(NUMBER_CFG),
+            borderColor: Utils.CHART_COLORS.green,
+            backgroundColor: Utils.CHART_COLORS.green,
+            fill: true
+          },
+          {
+            label: 'My Fourth dataset',
+            data: Utils.numbers(NUMBER_CFG),
+            borderColor: Utils.CHART_COLORS.yellow,
+            backgroundColor: Utils.CHART_COLORS.yellow,
+            fill: true
           }
         ]
       };
 
       //config
       const config = {
-        type: 'bar',
+        type: 'line',
         data: data,
         options: {
           responsive: true,
           plugins: {
-            legend: {
-              position: 'top'
-            },
             title: {
               display: true,
-              text: 'Chart.js Combined Line/Bar Chart'
+              text: (ctx) => 'Chart.js Line Chart - stacked=' + ctx.chart.options.scales.y.stacked
+            },
+            tooltip: {
+              mode: 'index'
+            }
+          },
+          interaction: {
+            mode: 'nearest',
+            axis: 'x',
+            intersect: false
+          },
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Month'
+              }
+            },
+            y: {
+              stacked: true,
+              title: {
+                display: true,
+                text: 'Value'
+              }
             }
           }
         }
@@ -88,6 +124,18 @@
 
       //action
       const actions = {
+        stacked: function () {
+          chart.options.scales.y.stacked = true;
+          chart.update();
+        },
+        stackedFalse: function () {
+          chart.options.scales.y.stacked = false;
+          chart.update();
+        },
+        stackedSingle: function () {
+          chart.options.scales.y.stacked = 'single';
+          chart.update();
+        },
         randomize: function () {
           chart.data.datasets.forEach((dataset) => {
             dataset.data = Utils.numbers({ count: chart.data.labels.length, min: -100, max: 100 });
@@ -99,9 +147,9 @@
           const dsColor = Utils.namedColor(chart.data.datasets.length);
           const newDataset = {
             label: 'Dataset ' + (data.datasets.length + 1),
-            backgroundColor: Utils.transparentize(dsColor, 0.5),
+            backgroundColor: dsColor,
             borderColor: dsColor,
-            borderWidth: 1,
+            fill: true,
             data: Utils.numbers({ count: data.labels.length, min: -100, max: 100 })
           };
           chart.data.datasets.push(newDataset);
