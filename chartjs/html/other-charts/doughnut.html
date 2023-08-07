@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>other charts</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="doughnut"><a href="#doughnut" class="header-anchor">#</a> Doughnut</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.randomize();">Randomize</a>
+              <a href="#" class="chart-action" onclick="actions.addDataset();">add Dataset</a>
+              <a href="#" class="chart-action" onclick="actions.addData();">add Data</a>
+              <a href="#" class="chart-action" onclick="actions.hide0();">Hide(0)</a>
+              <a href="#" class="chart-action" onclick="actions.show0();">show(0)</a>
+              <a href="#" class="chart-action" onclick="actions.hide01();">Hide(0, 1)</a>
+              <a href="#" class="chart-action" onclick="actions.show01();">show(0, 1)</a>
+              <a href="#" class="chart-action" onclick="actions.removeDataset();">remove Dataset</a>
+              <a href="#" class="chart-action" onclick="actions.removeData();">remove Data</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const DATA_COUNT = 5;
+      const NUMBER_CFG = { count: DATA_COUNT, min: 0, max: 100 };
+
+      const data = {
+        labels: ['Red', 'Orange', 'Yellow', 'Green', 'Blue'],
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: Utils.numbers(NUMBER_CFG),
+            backgroundColor: Object.values(Utils.CHART_COLORS)
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'doughnut',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top'
+            },
+            title: {
+              display: true,
+              text: 'Chart.js Doughnut Chart'
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      const actions = {
+        randomize: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data = Utils.numbers({ count: chart.data.labels.length, min: 0, max: 100 });
+          });
+          chart.update();
+        },
+        addDataset: function () {
+          const data = chart.data;
+          const newDataset = {
+            label: 'Dataset ' + (data.datasets.length + 1),
+            backgroundColor: [],
+            data: []
+          };
+
+          for (let i = 0; i < data.labels.length; i++) {
+            newDataset.data.push(Utils.numbers({ count: 1, min: 0, max: 100 }));
+
+            const colorIndex = i % Object.keys(Utils.CHART_COLORS).length;
+            newDataset.backgroundColor.push(Object.values(Utils.CHART_COLORS)[colorIndex]);
+          }
+
+          chart.data.datasets.push(newDataset);
+          chart.update();
+        },
+        addData: function () {
+          const data = chart.data;
+          if (data.datasets.length > 0) {
+            data.labels.push('data #' + (data.labels.length + 1));
+
+            for (let index = 0; index < data.datasets.length; ++index) {
+              data.datasets[index].data.push(Utils.rand(0, 100));
+            }
+
+            chart.update();
+          }
+        },
+        removeDataset: function () {
+          chart.data.datasets.pop();
+          chart.update();
+        },
+        removeData: function () {
+          chart.data.labels.splice(-1, 1); // remove the label first
+
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data.pop();
+          });
+
+          chart.update();
+        },
+        hide0: function () {
+          chart.hide(0);
+        },
+        show0: function () {
+          chart.show(0);
+        },
+        hide01: function () {
+          chart.hide(0, 1);
+        },
+        show01: function () {
+          chart.show(0, 1);
+        }
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

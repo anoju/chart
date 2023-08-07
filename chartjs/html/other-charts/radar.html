@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>other charts</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="radar"><a href="#radar" class="header-anchor">#</a> Radar</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.randomize();">Randomize</a>
+              <a href="#" class="chart-action" onclick="actions.addDataset();">add Dataset</a>
+              <a href="#" class="chart-action" onclick="actions.addData();">add Data</a>
+              <a href="#" class="chart-action" onclick="actions.removeDataset();">remove Dataset</a>
+              <a href="#" class="chart-action" onclick="actions.removeData();">remove Data</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const DATA_COUNT = 7;
+      const NUMBER_CFG = { count: DATA_COUNT, min: 0, max: 100 };
+
+      const labels = Utils.months({ count: 7 });
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: Utils.numbers(NUMBER_CFG),
+            borderColor: Utils.CHART_COLORS.red,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5)
+          },
+          {
+            label: 'Dataset 2',
+            data: Utils.numbers(NUMBER_CFG),
+            borderColor: Utils.CHART_COLORS.blue,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5)
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'radar',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Chart.js Radar Chart'
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      const actions = {
+        randomize: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data = Utils.numbers({ count: chart.data.labels.length, min: 0, max: 100 });
+          });
+          chart.update();
+        },
+        addDataset: function () {
+          const data = chart.data;
+          const dsColor = Utils.namedColor(chart.data.datasets.length);
+          const newDataset = {
+            label: 'Dataset ' + (data.datasets.length + 1),
+            backgroundColor: Utils.transparentize(dsColor, 0.5),
+            borderColor: dsColor,
+            data: Utils.numbers({ count: data.labels.length, min: 0, max: 100 })
+          };
+          chart.data.datasets.push(newDataset);
+          chart.update();
+        },
+        addData: function () {
+          const data = chart.data;
+          if (data.datasets.length > 0) {
+            data.labels = Utils.months({ count: data.labels.length + 1 });
+
+            for (let index = 0; index < data.datasets.length; ++index) {
+              data.datasets[index].data.push(Utils.rand(0, 100));
+            }
+
+            chart.update();
+          }
+        },
+        removeDataset: function () {
+          chart.data.datasets.pop();
+          chart.update();
+        },
+        removeData: function () {
+          chart.data.labels.splice(-1, 1); // remove the label first
+
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data.pop();
+          });
+
+          chart.update();
+        }
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

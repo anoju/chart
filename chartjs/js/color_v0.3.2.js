@@ -284,4 +284,3 @@
   });
   return Object.assign(W, j);
 });
-//# sourceMappingURL=color.min.js.map
