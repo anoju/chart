@@ -122,9 +122,33 @@ function valueOrDefault(value, defaultValue) {
   return typeof value === 'undefined' ? defaultValue : value;
 }
 
-const $anchor = document.querySelectorAll('a[href="#"]');
-$anchor.forEach(function (el) {
-  el.addEventListener('click', function (e) {
-    e.preventDefault();
+function anchorClick() {
+  const $anchor = document.querySelectorAll('a[href="#"]');
+  $anchor.forEach(function (el) {
+    el.addEventListener('click', function (e) {
+      e.preventDefault();
+    });
   });
+}
+anchorClick();
+
+function menuActive() {
+  const $pop = location.pathname.split('/').pop();
+  const $menuItems = document.querySelectorAll('.sidebar a');
+  $menuItems.forEach(function (item) {
+    const $hrefPop = item.href.split('?').shift().split('/').pop();
+    if ($hrefPop === $pop) {
+      item.classList.add('active');
+      const $closest = item.closest('.sidebar-group-items');
+      if ($closest) {
+        const previous = $closest.previousElementSibling;
+        if (previous) previous.classList.add('open');
+      }
+    }
+  });
+}
+window.addEventListener('load', function () {
+  this.setTimeout(function () {
+    menuActive();
+  }, 100);
 });

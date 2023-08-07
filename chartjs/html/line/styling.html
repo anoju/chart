@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>line</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="line-styling"><a href="#line-styling" class="header-anchor">#</a> Line Styling</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const DATA_COUNT = 7;
+      const NUMBER_CFG = { count: DATA_COUNT, min: -100, max: 100 };
+
+      const labels = Utils.months({ count: DATA_COUNT });
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Unfilled',
+            fill: false,
+            backgroundColor: Utils.CHART_COLORS.blue,
+            borderColor: Utils.CHART_COLORS.blue,
+            data: Utils.numbers(NUMBER_CFG)
+          },
+          {
+            label: 'Dashed',
+            fill: false,
+            backgroundColor: Utils.CHART_COLORS.green,
+            borderColor: Utils.CHART_COLORS.green,
+            borderDash: [5, 5],
+            data: Utils.numbers(NUMBER_CFG)
+          },
+          {
+            label: 'Filled',
+            backgroundColor: Utils.CHART_COLORS.red,
+            borderColor: Utils.CHART_COLORS.red,
+            data: Utils.numbers(NUMBER_CFG),
+            fill: true
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Chart.js Line Chart'
+            }
+          },
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Month'
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Value'
+              }
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

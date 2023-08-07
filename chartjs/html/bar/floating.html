@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>bar</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="floating-bars"><a href="#floating-bars" class="header-anchor">#</a> Floating Bars</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions();">Randomize</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      const DATA_COUNT = 7;
+      const NUMBER_CFG = { count: DATA_COUNT, min: -100, max: 100 };
+      const labels = Utils.months({ count: 7 });
+
+      //data
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: labels.map(() => {
+              return [Utils.rand(-100, 100), Utils.rand(-100, 100)];
+            }),
+            backgroundColor: Utils.CHART_COLORS.red
+          },
+          {
+            label: 'Dataset 2',
+            data: labels.map(() => {
+              return [Utils.rand(-100, 100), Utils.rand(-100, 100)];
+            }),
+            backgroundColor: Utils.CHART_COLORS.blue
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'bar',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top'
+            },
+            title: {
+              display: true,
+              text: 'Chart.js Floating Bar Chart'
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      const actions = function () {
+        chart.data.datasets.forEach((dataset) => {
+          dataset.data = chart.data.labels.map(() => {
+            return [Utils.rand(-100, 100), Utils.rand(-100, 100)];
+          });
+        });
+        chart.update();
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

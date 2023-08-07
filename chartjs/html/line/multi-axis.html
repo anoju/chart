@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>line</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="multi-axis-line-chart"><a href="#multi-axis-line-chart" class="header-anchor">#</a> Multi Axis Line Chart</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.randomize();">Randomize</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const DATA_COUNT = 7;
+      const NUMBER_CFG = { count: DATA_COUNT, min: -100, max: 100 };
+
+      const labels = Utils.months({ count: 7 });
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Dataset 1',
+            data: Utils.numbers(NUMBER_CFG),
+            borderColor: Utils.CHART_COLORS.red,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.red, 0.5),
+            yAxisID: 'y'
+          },
+          {
+            label: 'Dataset 2',
+            data: Utils.numbers(NUMBER_CFG),
+            borderColor: Utils.CHART_COLORS.blue,
+            backgroundColor: Utils.transparentize(Utils.CHART_COLORS.blue, 0.5),
+            yAxisID: 'y1'
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          stacked: false,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Chart.js Line Chart - Multi Axis'
+            }
+          },
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left'
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+
+              // grid line settings
+              grid: {
+                drawOnChartArea: false // only want the grid lines for one axis to show up
+              }
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      const actions = {
+        randomize: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data = Utils.numbers({ count: chart.data.labels.length, min: -100, max: 100 });
+          });
+          chart.update();
+        }
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>line</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="interpolation-modes"><a href="#interpolation-modes" class="header-anchor">#</a> Interpolation Modes</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const DATA_COUNT = 12;
+      const labels = [];
+      for (let i = 0; i < DATA_COUNT; ++i) {
+        labels.push(i.toString());
+      }
+      const datapoints = [0, 20, 20, 60, 60, 120, NaN, 180, 120, 125, 105, 110, 170];
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Cubic interpolation (monotone)',
+            data: datapoints,
+            borderColor: Utils.CHART_COLORS.red,
+            fill: false,
+            cubicInterpolationMode: 'monotone',
+            tension: 0.4
+          },
+          {
+            label: 'Cubic interpolation',
+            data: datapoints,
+            borderColor: Utils.CHART_COLORS.blue,
+            fill: false,
+            tension: 0.4
+          },
+          {
+            label: 'Linear interpolation (default)',
+            data: datapoints,
+            borderColor: Utils.CHART_COLORS.green,
+            fill: false
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          plugins: {
+            title: {
+              display: true,
+              text: 'Chart.js Line Chart - Cubic interpolation mode'
+            }
+          },
+          interaction: {
+            intersect: false
+          },
+          scales: {
+            x: {
+              display: true,
+              title: {
+                display: true
+              }
+            },
+            y: {
+              display: true,
+              title: {
+                display: true,
+                text: 'Value'
+              },
+              suggestedMin: -10,
+              suggestedMax: 200
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>line</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="stepped-line-charts"><a href="#stepped-line-charts" class="header-anchor">#</a> Stepped Line Charts</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.false();">Step: false (default)</a>
+              <a href="#" class="chart-action" onclick="actions.true();">Step: true</a>
+              <a href="#" class="chart-action" onclick="actions.before();">Step: before</a>
+              <a href="#" class="chart-action" onclick="actions.after();">Step: after</a>
+              <a href="#" class="chart-action" onclick="actions.middle();">Step: middle</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      const data = {
+        labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6'],
+        datasets: [
+          {
+            label: 'Dataset',
+            data: Utils.numbers({ count: 6, min: -100, max: 100 }),
+            borderColor: Utils.CHART_COLORS.red,
+            fill: false,
+            stepped: true
+          }
+        ]
+      };
+
+      //config
+      const config = {
+        type: 'line',
+        data: data,
+        options: {
+          responsive: true,
+          interaction: {
+            intersect: false,
+            axis: 'x'
+          },
+          plugins: {
+            title: {
+              display: true,
+              text: (ctx) => 'Step ' + ctx.chart.data.datasets[0].stepped + ' Interpolation'
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      const actions = {
+        false: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.stepped = false;
+          });
+          chart.update();
+        },
+        true: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.stepped = true;
+          });
+          chart.update();
+        },
+        before: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.stepped = 'before';
+          });
+          chart.update();
+        },
+        after: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.stepped = 'after';
+          });
+          chart.update();
+        },
+        middle: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.stepped = 'middle';
+          });
+          chart.update();
+        }
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>

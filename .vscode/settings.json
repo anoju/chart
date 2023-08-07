@@ -19,6 +19,9 @@
   "[html]": {
     "editor.formatOnSave": true
   },
+  "[css]": {
+    "editor.formatOnSave": true
+  },
   "[scss]": {
     "editor.formatOnSave": true
   },
