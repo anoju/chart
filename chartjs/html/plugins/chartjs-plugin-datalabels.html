@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>chartjs-plugin-datalabels</title>
+    <link rel="stylesheet" href="../../css/chart-docs.css" />
+    <script src="../../js/include.js"></script>
+  </head>
+  <body>
+    <div class="theme-container">
+      <div data-include="../include/navbar.html"></div>
+      <div data-include="../include/sidebar.html"></div>
+
+      <main class="page">
+        <div class="theme-default-content content__default">
+          <h1 id="datalabels"><a href="#datalabels" class="header-anchor">#</a> chartjs-plugin-datalabels</h1>
+          <div>
+            <div class="chart-view">
+              <canvas id="chart"></canvas>
+            </div>
+            <div class="chart-actions">
+              <a href="#" class="chart-action" onclick="actions.randomize();">Randomize</a>
+              <a href="#" class="chart-action" onclick="actions.addDataset();">add Dataset</a>
+              <a href="#" class="chart-action" onclick="actions.addData();">add Data</a>
+              <a href="#" class="chart-action" onclick="actions.removeDataset();">remove Dataset</a>
+              <a href="#" class="chart-action" onclick="actions.removeData();">remove Data</a>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <script src="../../js/chart.4.3.3.min.js"></script>
+    <script src="./chartjs-plugin-datalabels-2.2.0.min.js"></script>
+    <script src="../../js/luxon_v3.3.0.min.js"></script>
+    <script src="../../js/chartjs-adapter-luxon_v1.3.1.min.js"></script>
+    <script src="../../js/color_v0.3.2.js"></script>
+    <script src="../../js/chart_utils.js"></script>
+
+    <script>
+      //data
+      var DATA_COUNT = 8;
+      var labels = [];
+
+      Utils.srand(8);
+
+      for (var i = 0; i < DATA_COUNT; ++i) {
+        labels.push('' + i);
+      }
+
+      const data = {
+        labels: labels,
+        datasets: [
+          {
+            label: 'Dataset 1',
+            backgroundColor: Utils.color(0),
+            borderColor: Utils.color(0),
+            data: Utils.numbers({
+              count: DATA_COUNT,
+              min: 0,
+              max: 100
+            }),
+            datalabels: {
+              align: 'start',
+              anchor: 'start'
+            }
+          },
+          {
+            label: 'Dataset 2',
+            backgroundColor: Utils.color(1),
+            borderColor: Utils.color(1),
+            data: Utils.numbers({
+              count: DATA_COUNT,
+              min: 0,
+              max: 100
+            })
+          },
+          {
+            label: 'Dataset 3',
+            backgroundColor: Utils.color(2),
+            borderColor: Utils.color(2),
+            data: Utils.numbers({
+              count: DATA_COUNT,
+              min: 0,
+              max: 100
+            }),
+            datalabels: {
+              align: 'end',
+              anchor: 'end'
+            }
+          }
+        ]
+      };
+
+      const config = {
+        type: 'line',
+        plugins: [ChartDataLabels],
+        data: data,
+        options: {
+          plugins: {
+            datalabels: {
+              backgroundColor: function (context) {
+                return context.dataset.backgroundColor;
+              },
+              borderRadius: 4,
+              color: 'white',
+              font: {
+                weight: 'bold'
+              },
+              formatter: Math.round,
+              padding: 6
+            }
+          },
+
+          // Core options
+          aspectRatio: 5 / 3,
+          layout: {
+            padding: {
+              top: 32,
+              right: 16,
+              bottom: 16,
+              left: 8
+            }
+          },
+          elements: {
+            line: {
+              fill: false,
+              tension: 0.4
+            }
+          },
+          scales: {
+            y: {
+              stacked: true
+            }
+          }
+        }
+      };
+
+      //init
+      const ctx = document.getElementById('chart');
+      const chart = new Chart(ctx, config);
+
+      //action
+      const actions = {
+        randomize: function () {
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data = Utils.numbers({ count: DATA_COUNT, min: 0, max: 100 });
+          });
+          chart.update();
+        },
+        addDataset: function () {
+          const chartData = chart.data;
+          const newDataset = {
+            label: 'Dataset ' + (chartData.datasets.length + 1),
+            backgroundColor: Utils.color(chartData.datasets.length + 1),
+            borderColor: Utils.color(chartData.datasets.length + 1),
+            data: Utils.numbers({ count: DATA_COUNT, min: 0, max: 100 })
+          };
+          chart.data.datasets.push(newDataset);
+          chart.update();
+        },
+        addData: function () {
+          const data = chart.data;
+          if (data.datasets.length > 0) {
+            data.labels = Utils.months({ count: data.labels.length + 1 });
+
+            for (let index = 0; index < data.datasets.length; ++index) {
+              data.datasets[index].data.push(Utils.rand(0, 100));
+            }
+
+            chart.update();
+          }
+        },
+        removeDataset: function () {
+          chart.data.datasets.pop();
+          chart.update();
+        },
+        removeData: function () {
+          chart.data.labels.splice(-1, 1); // remove the label first
+
+          chart.data.datasets.forEach((dataset) => {
+            dataset.data.pop();
+          });
+
+          chart.update();
+        }
+      };
+
+      //resize
+      if (chart) {
+        window.addEventListener('resize', function () {
+          chart.resize();
+        });
+      }
+    </script>
+  </body>
+</html>
